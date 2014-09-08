@@ -39,8 +39,6 @@ public class FaceDecoder_GUI {
 	private String currentIDstr;
 	private String currentFirstName;
 	private String currentLastName;
-/*	private String [] choices = {"Welcome Panel", "New User Panel", "Returning User Panel"};*/
-
 
 	public static void main(String[] args) throws SQLException {
 		EventQueue.invokeLater(new Runnable() {
@@ -71,16 +69,11 @@ public class FaceDecoder_GUI {
 	class WelcomePanel extends JPanel{
 
 		private static final long serialVersionUID = 3051031197269645226L;
-		private JButton jcomp4;
 		private JPanel basePane;
-		private JComboBox choiceBox;
 
 		public WelcomePanel(JPanel panel, FaceDecoder_GUI fdg) {
 
-			//JPanel card1_welcomepanel = new JPanel();
 			setLayout(null);
-			//CARD 1: WELCOMEPANEL
-/*			fdg.getChoiceBox();*/
 			basePane = panel;
 			setOpaque(true);
 	        
@@ -146,10 +139,8 @@ public class FaceDecoder_GUI {
 		public NewUserPanel(JPanel panel, FaceDecoder_GUI fdg){
 			basePane = panel;
 			Connection conn = myconn;
-/*			JPanel card2_newuserpanel = new JPanel();*/
 			setLayout(null);
 			
-			// CARD 2: NEWUSERPANEL
 			JButton btnSubmit = new JButton("Submit"); // New user submits name
 			btnSubmit.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -218,10 +209,8 @@ public class FaceDecoder_GUI {
 			basePane = panel;
 			setOpaque(true);
 			Connection conn = myconn;
-			//JPanel card3_olduserpanel = new JPanel();
 			setLayout(null);
 			
-			//CARD 3: OLDUSERPANEL
 			JLabel lblIfYouKnow = new JLabel("If you know your ID number, enter it below:");
 			lblIfYouKnow.setBounds(12, 30, 271, 16);
 			add(lblIfYouKnow);
@@ -340,7 +329,6 @@ public class FaceDecoder_GUI {
 			setOpaque(true);
 			setLayout(null);
 			
-			//CARD 4: NEWUSERADDED
 			int id = database_access2.getMaxCustID(conn)+1;
 			String s1 = "You, " + currentFirstName + " " + currentLastName + ", have been successfully added to the database.";
 			String s2 = "Your user ID is: " + id;
@@ -367,10 +355,8 @@ public class FaceDecoder_GUI {
 			basePane = panel;
 			Connection conn = myconn;
 			setOpaque(true);
-			/*JPanel card5_loggedin = new JPanel();*/
 			setLayout(null);
 			
-			// CARD 5: LOGGEDIN
 			JLabel lblYouHaveBeen_1 = new JLabel("You have been logged in as: ");
 			lblYouHaveBeen_1.setBounds(123, 45, 175, 16);
 			add(lblYouHaveBeen_1);
@@ -396,11 +382,6 @@ public class FaceDecoder_GUI {
 		
 	}
 	
-/*    public JComboBox getChoiceBox()
-    {
-        return choiceBox;
-    }
-	*/
 	public void initializeGUI() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 
 		JFrame frame = new JFrame("FaceDecoder_GUI");
@@ -409,7 +390,6 @@ public class FaceDecoder_GUI {
 		basePane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		basePane.setLayout(new CardLayout());
 		
-/*		choiceBox = new JComboBox(choices);*/
 		ConnectionToDatabase aconn = new ConnectionToDatabase();
 		myconn = aconn.conn;
 		
@@ -425,7 +405,6 @@ public class FaceDecoder_GUI {
 		basePane.add(panel4,NEWUSERADDED);
 		basePane.add(panel5,LOGGEDIN);
 
-/*		frame.getContentPane().add(choiceBox);*/
 		frame.getContentPane().add(basePane);
         frame.pack();
         frame.setLocationByPlatform(true);
