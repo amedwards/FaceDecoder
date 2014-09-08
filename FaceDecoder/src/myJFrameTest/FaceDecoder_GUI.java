@@ -17,7 +17,6 @@ import java.sql.SQLException;
 
 public class FaceDecoder_GUI {
 
-	private static final long serialVersionUID = 1L;
 	private JPanel basePane;
 	private JTextField tf_firstname_newuser;
 	private JTextField tf_lastname_newuser;
@@ -81,6 +80,11 @@ public class FaceDecoder_GUI {
 			btnIAmA.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					CardLayout cl = (CardLayout)(basePane.getLayout());
+					
+					// Initialize the New User Panel
+					panel2 = new NewUserPanel(basePane,fdg);
+					basePane.add(panel2,NEWUSERPANEL);
+					
 					cl.show(basePane,NEWUSERPANEL);
 				}
 			});
@@ -92,6 +96,11 @@ public class FaceDecoder_GUI {
 			btnIAlreadyHave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					CardLayout cl = (CardLayout)(basePane.getLayout());
+					
+					//Initialize the Old User Panel
+					panel3 = new OldUserPanel(basePane,fdg);
+					basePane.add(panel3,OLDUSERPANEL);
+					
 					cl.show(basePane,OLDUSERPANEL);
 				}
 			});
@@ -161,6 +170,15 @@ public class FaceDecoder_GUI {
 							e1.printStackTrace();
 						}
 						CardLayout cl = (CardLayout)(basePane.getLayout());
+						
+						//Initialize New User Added Panel
+						try {
+							panel4 = new NewUserAdded(basePane,fdg);
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+						basePane.add(panel4,NEWUSERADDED);
+						
 						cl.show(basePane,NEWUSERADDED);
 					};
 				}
@@ -221,7 +239,7 @@ public class FaceDecoder_GUI {
 			tf_idnumber_olduser.setColumns(10);
 			currentIDstr = tf_idnumber_olduser.getText();
 			if (currentIDstr.length() != 0){
-				currentID = Integer.parseInt(loggedInUser);
+				currentID = Integer.parseInt(currentIDstr);
 			}
 			
 			JLabel lblIdNumber = new JLabel("ID Number:");
@@ -251,6 +269,15 @@ public class FaceDecoder_GUI {
 							e.printStackTrace();
 						}
 						CardLayout cl = (CardLayout)(basePane.getLayout());
+						
+						//Initialize Logged In Pane
+						try {
+							panel5 = new LoggedIn(basePane,fdg,1);//The 1 indicates that there the User's ID has been given
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+						basePane.add(panel5,LOGGEDIN);
+						
 						cl.show(basePane,LOGGEDIN);
 					}
 				}
@@ -279,9 +306,9 @@ public class FaceDecoder_GUI {
 			JButton btnSubmitName = new JButton("Submit Name");
 			btnSubmitName.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) { // Old user has submitted his or her name
-					String firstName = tf_firstname_olduser.getText();
-					String lastName = tf_lastname_olduser.getText();
-					if (firstName.length()==0 || lastName.length()==0){//If the user has not filled in a first or last name
+					currentFirstName = tf_firstname_olduser.getText();
+					currentLastName = tf_lastname_olduser.getText();
+					if (currentFirstName.length()==0 || currentLastName.length()==0){//If the user has not filled in a first or last name
 						//Error Handling
 						JOptionPane.showMessageDialog(basePane, "One or more name fields has been left blank.  Please fill in both first and last name fields.");
 						CardLayout cl = (CardLayout)(basePane.getLayout());
@@ -290,17 +317,26 @@ public class FaceDecoder_GUI {
 					else{
 						int temporarycustID = 0;
 						try {
-							temporarycustID = database_access2.getID(conn, firstName, lastName);
+							temporarycustID = database_access2.getID(conn, currentFirstName, currentLastName);
 						} catch (SQLException e1) {
 							e1.printStackTrace();
 						}
 						if (temporarycustID!=0){
 							System.out.println(temporarycustID);
 							CardLayout cl = (CardLayout)(basePane.getLayout());
+							
+							//Initialize Logged In Pane
+							try {
+								panel5 = new LoggedIn(basePane,fdg,2);
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							}
+							basePane.add(panel5,LOGGEDIN);
+							
 							cl.show(basePane,LOGGEDIN);
 						}
 						else{
-							JOptionPane.showMessageDialog(basePane, "Your name could not be found in the database, please try entering your informaiton again");
+							JOptionPane.showMessageDialog(basePane, "Your name could not be found in the database, please try entering your information again");
 							CardLayout cl = (CardLayout)(basePane.getLayout());
 							cl.show(basePane,OLDUSERPANEL);
 						}
@@ -334,7 +370,7 @@ public class FaceDecoder_GUI {
 			String s2 = "Your user ID is: " + id;
 			
 			JLabel lblYouHaveBeen = new JLabel(s1);
-			lblYouHaveBeen.setBounds(106, 68, 232, 16);
+			lblYouHaveBeen.setBounds(76, 68, 400, 16);
 			add(lblYouHaveBeen);
 			
 			JButton btnContinue = new JButton("Continue");
@@ -351,7 +387,7 @@ public class FaceDecoder_GUI {
 
 		private static final long serialVersionUID = 4631572650799688037L;
 		
-		public LoggedIn(JPanel panel, FaceDecoder_GUI fdg) throws SQLException{
+		public LoggedIn(JPanel panel, FaceDecoder_GUI fdg, int IDorName) throws SQLException{
 			basePane = panel;
 			Connection conn = myconn;
 			setOpaque(true);
@@ -361,14 +397,19 @@ public class FaceDecoder_GUI {
 			lblYouHaveBeen_1.setBounds(123, 45, 175, 16);
 			add(lblYouHaveBeen_1);
 			
-			String firstname_loggedin = database_access2.getFirstName(conn, currentID);
-			String lastname_loggedin = database_access2.getLastName(conn, currentID);
-			JLabel lblOldUsersName = new JLabel(firstname_loggedin + " " + lastname_loggedin);//(firstName + " " + lastName);
-			lblOldUsersName.setBounds(143, 84, 135, 16);
+			if (IDorName==1){
+				currentFirstName = database_access2.getFirstName(conn, currentID);
+				currentLastName = database_access2.getLastName(conn, currentID);
+			}
+			else{
+				currentID = database_access2.getID(conn, currentFirstName, currentLastName);
+			}
+			JLabel lblOldUsersName = new JLabel(currentFirstName + " " + currentLastName);
+			lblOldUsersName.setBounds(154, 84, 135, 16);
 			add(lblOldUsersName);
 			
-			JLabel lblUserId = new JLabel("User ID: " + "another HOLDER");//OldUserPanel.loggedInUser);
-			lblUserId.setBounds(153, 113, 114, 16);
+			JLabel lblUserId = new JLabel("User ID: " + currentID);//OldUserPanel.loggedInUser);
+			lblUserId.setBounds(154, 113, 135, 16);
 			add(lblUserId);
 			
 			JButton btnContinue_1 = new JButton("Continue");
@@ -376,7 +417,7 @@ public class FaceDecoder_GUI {
 			add(btnContinue_1);
 			
 			JButton btnThisIsntMe = new JButton("This isn't me");
-			btnThisIsntMe.setBounds(158, 205, 105, 25);
+			btnThisIsntMe.setBounds(150, 205, 135, 25);
 			add(btnThisIsntMe);
 		}
 		
@@ -394,16 +435,16 @@ public class FaceDecoder_GUI {
 		myconn = aconn.conn;
 		
 		panel1 = new WelcomePanel(basePane,this);
-		panel2 = new NewUserPanel(basePane,this);
-		panel3 = new OldUserPanel(basePane,this);
-		panel4 = new NewUserAdded(basePane,this);
-		panel5 = new LoggedIn(basePane,this);
+		//panel2 = new NewUserPanel(basePane,this);
+		//panel3 = new OldUserPanel(basePane,this);
+		//panel4 = new NewUserAdded(basePane,this);
+		//panel5 = new LoggedIn(basePane,this);
 		
 		basePane.add(panel1,WELCOMEPANEL);
-		basePane.add(panel2,NEWUSERPANEL);
-		basePane.add(panel3,OLDUSERPANEL);
-		basePane.add(panel4,NEWUSERADDED);
-		basePane.add(panel5,LOGGEDIN);
+		//basePane.add(panel2,NEWUSERPANEL);
+		//basePane.add(panel3,OLDUSERPANEL);
+		//basePane.add(panel4,NEWUSERADDED);
+		//basePane.add(panel5,LOGGEDIN);
 
 		frame.getContentPane().add(basePane);
         frame.pack();
