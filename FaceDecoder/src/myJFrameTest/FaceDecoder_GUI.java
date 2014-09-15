@@ -4,10 +4,12 @@ import java.awt.*;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.SwingConstants;
+import javax.swing.UnsupportedLookAndFeelException;
+//import javax.swing.border.EmptyBorder;
 
 import java.awt.CardLayout;
-import java.awt.Panel;
+//import java.awt.Panel;
 
 import javax.swing.*;
 
@@ -38,6 +40,8 @@ public class FaceDecoder_GUI {
 	private String currentIDstr;
 	private String currentFirstName;
 	private String currentLastName;
+	private int xwindowdim = 450;
+	private int ywindowdim = 300;
 
 	public static void main(String[] args) throws SQLException {
 		EventQueue.invokeLater(new Runnable() {
@@ -88,8 +92,8 @@ public class FaceDecoder_GUI {
 					cl.show(basePane,NEWUSERPANEL);
 				}
 			});
-
-			btnIAmA.setBounds(134, 98, 153, 25);
+			int btnIAmA_width = 153;
+			btnIAmA.setBounds((xwindowdim-btnIAmA_width)/2, 98, btnIAmA_width, 25);
 			add(btnIAmA);
 
 			JButton btnIAlreadyHave = new JButton("I already have an account");
@@ -104,18 +108,20 @@ public class FaceDecoder_GUI {
 					cl.show(basePane,OLDUSERPANEL);
 				}
 			});
-			btnIAlreadyHave.setBounds(121, 136, 179, 25);
+			int btnIAlreadyHave_width = 179;
+			btnIAlreadyHave.setBounds((xwindowdim-btnIAlreadyHave_width)/2, 136, btnIAlreadyHave_width, 25);
 			add(btnIAlreadyHave);
 			
 			JLabel lblWelcomeToThe = new JLabel("Welcome to the facial expression decoder system");
-			lblWelcomeToThe.setBounds(71, 43, 291, 25);
+			lblWelcomeToThe.setHorizontalAlignment(SwingConstants.CENTER);
+			lblWelcomeToThe.setBounds(0, 43, xwindowdim, 25);
 			add(lblWelcomeToThe);
 		}
 		
 	    @Override
 	    public Dimension getPreferredSize()
 	    {
-	        return (new Dimension(500, 500));
+	        return (new Dimension(xwindowdim, ywindowdim));
 	    }
 	}
 	
@@ -183,38 +189,37 @@ public class FaceDecoder_GUI {
 					};
 				}
 			});
-			btnSubmit.setBounds(151, 187, 97, 25);
+			int btnSubmit_width = 97;
+			btnSubmit.setBounds((xwindowdim-btnSubmit_width)/2, 187, btnSubmit_width, 25);
 			add(btnSubmit);
 			
 			tf_firstname_newuser = new JTextField(); //First Name new user input text field
-			tf_firstname_newuser.setBounds(185, 95, 116, 22);
+			tf_firstname_newuser.setBounds(xwindowdim/2+10, 95, 116, 22);
 			add(tf_firstname_newuser);
 			tf_firstname_newuser.setColumns(10);
 			
 			tf_lastname_newuser = new JTextField(); //Last Name new user input text field
-			tf_lastname_newuser.setBounds(185, 130, 116, 22);
+			tf_lastname_newuser.setBounds(xwindowdim/2+10, 130, 116, 22);
 			add(tf_lastname_newuser);
 			tf_lastname_newuser.setColumns(10);
 			
 			JLabel lblFirstName = new JLabel("First Name:");
-			lblFirstName.setBounds(98, 98, 75, 16);
+			int lblFirstName_width = 105;
+			lblFirstName.setBounds(xwindowdim/2-lblFirstName_width-10, 98, lblFirstName_width, 16);
 			add(lblFirstName);
 			
 			JLabel lblLastName_1 = new JLabel("Last Name:");
-			lblLastName_1.setBounds(98, 133, 75, 16);
+			int lblLastName_1_width = lblFirstName_width;
+			lblLastName_1.setBounds(xwindowdim/2-lblLastName_1_width-10, 133, lblLastName_1_width, 16);
 			add(lblLastName_1);
 			
 			JLabel lblPleaseEnterYour = new JLabel("Please enter your information:");
-			lblPleaseEnterYour.setBounds(98, 49, 203, 16);
+			lblPleaseEnterYour.setHorizontalAlignment(SwingConstants.CENTER);
+			lblPleaseEnterYour.setBounds(0, 49, xwindowdim, 16);
 			add(lblPleaseEnterYour);
 
 		}
 		
-	    @Override
-	    public Dimension getPreferredSize()
-	    {
-	        return (new Dimension(500, 500));
-	    }
 	}
 	
 	class OldUserPanel extends JPanel {
@@ -237,10 +242,6 @@ public class FaceDecoder_GUI {
 			tf_idnumber_olduser.setBounds(125, 56, 116, 22);
 			add(tf_idnumber_olduser);
 			tf_idnumber_olduser.setColumns(10);
-			currentIDstr = tf_idnumber_olduser.getText();
-			if (currentIDstr.length() != 0){
-				currentID = Integer.parseInt(currentIDstr);
-			}
 			
 			JLabel lblIdNumber = new JLabel("ID Number:");
 			lblIdNumber.setBounds(22, 59, 91, 16);
@@ -253,18 +254,32 @@ public class FaceDecoder_GUI {
 			JButton btnSubmitIdNumber = new JButton("Submit ID Number");
 			btnSubmitIdNumber.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {//Old user has submitted his or her ID number
-					String loggedInUser2 = tf_idnumber_olduser.getText();
-					int loggedInUserInt2 = Integer.parseInt(loggedInUser2);
-					if (loggedInUser2.length() == 0){
+					currentIDstr = tf_idnumber_olduser.getText();
+					if (currentIDstr.length() != 0){
+						currentID = Integer.parseInt(currentIDstr);
+					}
+					int loggedInUserInt2 = currentID;
+					int maxID = 0;
+					try {
+						maxID = database_access2.getMaxCustID(conn);
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+					if (currentIDstr.length() == 0){
 						//Error Handling
 						JOptionPane.showMessageDialog(basePane, "ID field has been left blank.  Please fill in your ID.");
 						CardLayout cl = (CardLayout)(basePane.getLayout());
 						cl.show(basePane,OLDUSERPANEL);
 					}
+					if (currentID>maxID){
+						//Error Handling
+						JOptionPane.showMessageDialog(basePane, "ID number has not yet been assigned.  Please check your ID number.");
+						CardLayout cl = (CardLayout)(basePane.getLayout());
+						cl.show(basePane,OLDUSERPANEL);
+					}
 					else{
 						try {
-							int item = database_access2.checkID(conn, loggedInUserInt2);
-							System.out.println(item);
+							database_access2.checkID(conn, loggedInUserInt2);
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
@@ -322,7 +337,6 @@ public class FaceDecoder_GUI {
 							e1.printStackTrace();
 						}
 						if (temporarycustID!=0){
-							System.out.println(temporarycustID);
 							CardLayout cl = (CardLayout)(basePane.getLayout());
 							
 							//Initialize Logged In Pane
@@ -347,12 +361,6 @@ public class FaceDecoder_GUI {
 			add(btnSubmitName);
 		}
 		
-	    @Override
-	    public Dimension getPreferredSize()
-	    {
-	        return (new Dimension(500, 500));
-	    }
-		
 	}
 	
 	class NewUserAdded extends JPanel {
@@ -370,15 +378,18 @@ public class FaceDecoder_GUI {
 			String s2 = "Your user ID is: " + id;
 			
 			JLabel lblYouHaveBeen = new JLabel(s1);
-			lblYouHaveBeen.setBounds(76, 68, 400, 16);
+			lblYouHaveBeen.setHorizontalAlignment(SwingConstants.CENTER);
+			lblYouHaveBeen.setBounds(0, 68, xwindowdim, 16);
 			add(lblYouHaveBeen);
 			
 			JButton btnContinue = new JButton("Continue");
-			btnContinue.setBounds(173, 173, 97, 25);
+			btnContinue.setHorizontalAlignment(SwingConstants.CENTER);
+			btnContinue.setBounds(175, 173, 100, 25);
 			add(btnContinue);
 			
 			JLabel lblNewLabel = new JLabel(s2);
-			lblNewLabel.setBounds(162, 121, 119, 16);
+			lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			lblNewLabel.setBounds(0, 121, xwindowdim, 16);
 			add(lblNewLabel);
 		}
 	}
@@ -395,6 +406,8 @@ public class FaceDecoder_GUI {
 			
 			JLabel lblYouHaveBeen_1 = new JLabel("You have been logged in as: ");
 			lblYouHaveBeen_1.setBounds(123, 45, 175, 16);
+			lblYouHaveBeen_1.setHorizontalAlignment(SwingConstants.CENTER);
+			lblYouHaveBeen_1.setBounds(0, 45, xwindowdim, 16);
 			add(lblYouHaveBeen_1);
 			
 			if (IDorName==1){
@@ -405,27 +418,36 @@ public class FaceDecoder_GUI {
 				currentID = database_access2.getID(conn, currentFirstName, currentLastName);
 			}
 			JLabel lblOldUsersName = new JLabel(currentFirstName + " " + currentLastName);
-			lblOldUsersName.setBounds(154, 84, 135, 16);
+//			lblOldUsersName.setBounds(154, 84, 135, 16);
+			lblOldUsersName.setHorizontalAlignment(SwingConstants.CENTER);
+			lblOldUsersName.setBounds(0, 74, xwindowdim, 16);
 			add(lblOldUsersName);
 			
 			JLabel lblUserId = new JLabel("User ID: " + currentID);//OldUserPanel.loggedInUser);
-			lblUserId.setBounds(154, 113, 135, 16);
+//			lblUserId.setBounds(154, 113, 135, 16);
+			lblOldUsersName.setHorizontalAlignment(SwingConstants.CENTER);
+			lblOldUsersName.setBounds(0, 113, xwindowdim, 16);
 			add(lblUserId);
 			
 			JButton btnContinue_1 = new JButton("Continue");
-			btnContinue_1.setBounds(154, 155, 113, 37);
+			btnContinue_1.setHorizontalAlignment(SwingConstants.CENTER);
+			btnContinue_1.setBounds(0, 155, xwindowdim, 37);
+//			btnContinue_1.setBounds(154, 155, 113, 37);
 			add(btnContinue_1);
 			
 			JButton btnThisIsntMe = new JButton("This isn't me");
-			btnThisIsntMe.setBounds(150, 205, 135, 25);
+//			btnThisIsntMe.setBounds(150, 205, 135, 25);
+			btnThisIsntMe.setHorizontalAlignment(SwingConstants.CENTER);
+			btnThisIsntMe.setBounds(0, 205, xwindowdim, 37);
 			add(btnThisIsntMe);
 		}
 		
 	}
 	
-	public void initializeGUI() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+	public void initializeGUI() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, UnsupportedLookAndFeelException{
 
 		JFrame frame = new JFrame("FaceDecoder_GUI");
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JPanel basePane = new JPanel();
 		basePane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));

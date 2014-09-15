@@ -1,6 +1,6 @@
 package myJFrameTest;
 
-import java.awt.BorderLayout;
+//import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -8,11 +8,11 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.CardLayout;
-import java.awt.Panel;
+//import java.awt.Panel;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
+//import javax.swing.JTextPane;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.swing.SwingConstants;
 
 public class CardLayoutTest2 extends JFrame {
 
@@ -113,11 +114,13 @@ public class CardLayoutTest2 extends JFrame {
 		String firstname_loggedin = database_access2.getFirstName(conn, loggedInUserInt);
 		String lastname_loggedin = database_access2.getLastName(conn, loggedInUserInt);
 		JLabel lblOldUsersName = new JLabel(firstname_loggedin + " " + lastname_loggedin);//(firstName + " " + lastName);
+		lblOldUsersName.setHorizontalAlignment(SwingConstants.CENTER);
 		lblOldUsersName.setBounds(143, 84, 135, 16);
 		card5.add(lblOldUsersName);
 		
 		JLabel lblUserId = new JLabel("User ID: " + loggedInUser);
-		lblUserId.setBounds(153, 113, 114, 16);
+		lblUserId.setHorizontalAlignment(SwingConstants.CENTER);
+		lblUserId.setBounds(154, 113, 114, 16);
 		card5.add(lblUserId);
 		
 		JButton btnContinue_1 = new JButton("Continue");
@@ -134,15 +137,16 @@ public class CardLayoutTest2 extends JFrame {
 		String s2 = "Your user ID is: " + id;
 		
 		JLabel lblYouHaveBeen = new JLabel("You have been added to the database");
-		lblYouHaveBeen.setBounds(106, 68, 232, 16);
+		lblYouHaveBeen.setHorizontalAlignment(SwingConstants.CENTER);
+		lblYouHaveBeen.setBounds(35, 68, 351, 16);
 		card4.add(lblYouHaveBeen);
 		
 		JButton btnContinue = new JButton("Continue");
-		btnContinue.setBounds(173, 173, 97, 25);
+		btnContinue.setBounds(162, 173, 97, 25);
 		card4.add(btnContinue);
 		
 		JLabel lblNewLabel = new JLabel(s2);
-		lblNewLabel.setBounds(162, 121, 119, 16);
+		lblNewLabel.setBounds(151, 121, 119, 16);
 		card4.add(lblNewLabel);
 		
 		//CARD 3: OLDUSERPANEL
